@@ -1,19 +1,22 @@
 {
-  "name": "nodejs",
+  "name": "discord-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bot para Discord",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@types/node": "^22.13.11",
-    "discord.js": "^14.18.0",
-    "express": "^5.1.0",
-    "node-fetch": "^3.3.2",
-    "sqlite3": "^5.1.7"
+    "@discordjs/voice": "^0.18.0",
+    "@distube/yt-dlp": "^2.0.1",
+    "@distube/ytdl-core": "^4.16.8",
+    "discord.js": "^14.14.1",
+    "distube": "^5.0.7",
+    "express": "^4.18.2",
+    "ffmpeg": "^0.0.4",
+    "ffmpeg-binaries": "^3.2.2",
+    "ffmpeg-static": "^4.4.1",
+    "play-dl": "^1.9.7",
+    "sqlite3": "^5.1.6"
   }
 }
