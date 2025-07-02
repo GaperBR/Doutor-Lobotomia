@@ -807,7 +807,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
             },
             {
               name: "🎭 **DIVERSÃO & INTERAÇÃO**",
-              value: "> `/ola` - Receba uma saudação personalizada\n" +
+              value: "> `/piada` - Escute uma piada do doutor\n" +
+                     "> `/ola` - Receba uma saudação personalizada\n" +
                      "> `/ping` - Teste a latência do bot",
               inline: false
             },
@@ -909,6 +910,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
             return;
           }
 
+          // Handler para voltar ao menu principal
+          if (i.customId === "help_back") {
+            await i.update({
+              embeds: [helpEmbed],
+              components: helpButtons
+            });
+            return;
+          }
+
           let categoryEmbed;
           
           switch (i.customId) {
@@ -983,7 +993,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 .setDescription("*Entretenimento científico garantido!*")
                 .setColor(0xFFE66D)
                 .addFields(
-        
+                  {
+                    name: "😄 `/piada`",
+                    value: "**Humor:** Piadas científicas do doutor\n**Variedade:** Banco de piadas médicas\n**Interação:** Reações automáticas",
+                    inline: false
+                  },
                   {
                     name: "👋 `/ola`",
                     value: "**Saudação:** Cumprimento personalizado\n**Uso:** Interação amigável\n**Resposta:** Menciona seu nome",
@@ -1059,16 +1073,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
           });
         });
 
-        // Handler para voltar ao menu principal
-        helpCollector.on('collect', async (i) => {
-          if (i.customId === "help_back") {
-            await i.update({
-              embeds: [helpEmbed],
-              components: helpButtons
-            });
-          }
-        });
-
         // Quando o collector expirar
         helpCollector.on('end', () => {
           const disabledButtons = [
@@ -1084,7 +1088,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
           helpMessage.edit({ components: disabledButtons }).catch(() => {});
         });
 
-        break;
         break;
       case "limpar-comandos":
         // Verificar permissões
