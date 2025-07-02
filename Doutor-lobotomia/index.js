@@ -273,7 +273,7 @@ client.on(Events.InteractionCreate, async interaction => {
         }
 
         const mensagem = `@${interaction.user.username} realizou uma lobotomia no nerdola do @${alvo.username}`;
-        const imagem = 'Doutor-lobotomia\Lobotomia.png'; // Substitua pelo link da imagem ou caminho local
+        const imagem = './Lobotomia.png'; // Substitua pelo link da imagem ou caminho local
 
         await interaction.reply({
           content: mensagem,
