@@ -782,22 +782,309 @@ client.on(Events.InteractionCreate, async (interaction) => {
         break;
 
       case "ajuda":
-        await interaction.reply(
-          "Comandos disponíveis:\n" +
-            "/ping - Teste de latência\n" +
-            "/ola - Receba uma saudação personalizada\n" +
-            "/ajuda - Lista de comandos disponíveis\n" +
-            "/ranking - Veja o ranking de tempo em call\n" +
-            "/lobotomizar - Realiza uma lobotomia em um nerdola\n" +
-            "/reversao - Reverte a lobotomia de um nerdola\n" +
-            "/lobotomia-stats - Veja estatísticas de lobotomias\n" +
-            "/diagnosticar - Diagnóstico mental científico\n" +
-            "/experimento - Realize um experimento científico\n" +
-            "/ciencia-stats - Estatísticas de diagnósticos e experimentos\n" +
-            "/status-mental - Ver diagnósticos e experimentos ativos\n" +
-            "/curar - Remover efeitos de diagnósticos ou experimentos\n" +
-            "/configurar - Configura ajustes do bot",
-        );
+        const helpEmbed = new EmbedBuilder()
+          .setTitle("🧠 **DOUTOR LOBOTOMIA** - Central de Comandos")
+          .setDescription("*Bem-vindo ao laboratório científico mais avançado do Discord!*\n\n**Selecione uma categoria abaixo para explorar os comandos:**")
+          .setColor(0x00CED1) // Cor ciano/turquesa
+          .setThumbnail(interaction.client.user.displayAvatarURL())
+          .addFields(
+            {
+              name: "🏥 **OPERAÇÕES MÉDICAS**",
+              value: "> `/lobotomizar` - Realize uma lobotomia científica\n" +
+                     "> `/reversao` - Reverta os efeitos de uma lobotomia\n" +
+                     "> `/diagnosticar` - Diagnóstico mental avançado\n" +
+                     "> `/experimento` - Conduza experimentos científicos\n" +
+                     "> `/curar` - Remova efeitos ativos de diagnósticos/experimentos",
+              inline: false
+            },
+            {
+              name: "📊 **ESTATÍSTICAS & RANKINGS**",
+              value: "> `/ranking` - Ranking de tempo em call do servidor\n" +
+                     "> `/lobotomia-stats` - Estatísticas detalhadas de lobotomias\n" +
+                     "> `/ciencia-stats` - Relatório de diagnósticos e experimentos\n" +
+                     "> `/status-mental` - Verificar condições mentais ativas",
+              inline: false
+            },
+            {
+              name: "🎭 **DIVERSÃO & INTERAÇÃO**",
+              value: "> `/ola` - Receba uma saudação personalizada\n" +
+                     "> `/ping` - Teste a latência do bot",
+              inline: false
+            },
+            {
+              name: "👨‍💼 **ÁREA ADMINISTRATIVA**",
+              value: "> `/configurar` - Ajustes avançados do bot\n" +
+                     "> `/refresh` - Atualizar comandos do sistema\n" +
+                     "> `/limpar-comandos` - Reset completo de comandos",
+              inline: false
+            },
+            {
+              name: "🕰️ **RECURSOS ESPECIAIS**",
+              value: "> Sistema de **tempo em call** automático\n" +
+                     "> **Rankings interativos** com navegação\n" +
+                     "> **Efeitos temporários** de experimentos\n" +
+                     "> **Banco de dados** persistente",
+              inline: false
+            }
+          )
+          .addFields(
+            {
+              name: "ℹ️ **COMO USAR**",
+              value: "• Digite `/` e selecione um comando\n" +
+                     "• Use `@usuário` para mencionar alvos\n" +
+                     "• Alguns comandos requerem permissões de administrador\n" +
+                     "• Os efeitos são temporários e seguros",
+              inline: true
+            },
+            {
+              name: "🔬 **SOBRE O DOUTOR**",
+              value: "Bot científico especializado em:\n" +
+                     "• **Lobotomias recreativas**\n" +
+                     "• **Diagnósticos hilários**\n" +
+                     "• **Experimentos seguros**\n" +
+                     "• **Diversão responsável**",
+              inline: true
+            }
+          )
+          .setFooter({ 
+            text: `Solicitado por ${interaction.user.username} • Doutor Lobotomia v2.0`,
+            iconURL: interaction.user.displayAvatarURL() 
+          })
+          .setTimestamp();
+
+        // Adicionar botões de navegação rápida
+        const helpButtons = [
+          {
+            type: 1,
+            components: [
+              {
+                type: 2,
+                style: 1, // Primary (azul)
+                customId: "help_medical",
+                emoji: "🏥",
+                label: "Médico"
+              },
+              {
+                type: 2,
+                style: 1,
+                customId: "help_stats",
+                emoji: "📊", 
+                label: "Stats"
+              },
+              {
+                type: 2,
+                style: 1,
+                customId: "help_fun",
+                emoji: "🎭",
+                label: "Diversão"
+              },
+              {
+                type: 2,
+                style: 2, // Secondary (cinza)
+                customId: "help_admin",
+                emoji: "👨‍💼",
+                label: "Admin"
+              }
+            ]
+          }
+        ];
+
+        const helpMessage = await interaction.reply({
+          embeds: [helpEmbed],
+          components: helpButtons,
+          fetchReply: true
+        });
+
+        // Collector para os botões de navegação
+        const helpCollector = helpMessage.createMessageComponentCollector({
+          time: 300000 // 5 minutos
+        });
+
+        helpCollector.on('collect', async (i) => {
+          if (i.user.id !== interaction.user.id) {
+            await i.reply({
+              content: "Apenas quem solicitou a ajuda pode navegar pelos menus!",
+              ephemeral: true
+            });
+            return;
+          }
+
+          let categoryEmbed;
+          
+          switch (i.customId) {
+            case "help_medical":
+              categoryEmbed = new EmbedBuilder()
+                .setTitle("🏥 **OPERAÇÕES MÉDICAS DISPONÍVEIS**")
+                .setDescription("*Arsenal completo de procedimentos científicos do Doutor Lobotomia*")
+                .setColor(0xFF6B6B)
+                .addFields(
+                  {
+                    name: "🧠 `/lobotomizar @usuário`",
+                    value: "**Descrição:** Realiza uma lobotomia científica recreativa\n**Uso:** Diversão entre amigos\n**Efeito:** Contador permanente de lobotomias",
+                    inline: false
+                  },
+                  {
+                    name: "🔄 `/reversao @usuário`", 
+                    value: "**Descrição:** Reverte os efeitos de uma lobotomia anterior\n**Uso:** 'Cura' uma lobotomia\n**Efeito:** Contador de reversões",
+                    inline: false
+                  },
+                  {
+                    name: "🔬 `/diagnosticar @usuário`",
+                    value: "**Descrição:** Fornece um diagnóstico mental hilário\n**Uso:** Diagnósticos temporários engraçados\n**Duração:** Configurável pelo admin",
+                    inline: false
+                  },
+                  {
+                    name: "⚗️ `/experimento @usuário`",
+                    value: "**Descrição:** Conduz experimentos científicos seguros\n**Uso:** Efeitos temporários criativos\n**Duração:** Configurável pelo admin",
+                    inline: false
+                  },
+                  {
+                    name: "💊 `/curar @usuário`",
+                    value: "**Descrição:** Remove diagnósticos ou experimentos ativos\n**Uso:** Limpar efeitos temporários\n**Opções:** Diagnóstico ou Experimento",
+                    inline: false
+                  }
+                )
+                .setFooter({ text: "Clique em 'Voltar' para retornar ao menu principal" });
+              break;
+
+            case "help_stats":
+              categoryEmbed = new EmbedBuilder()
+                .setTitle("📊 **CENTRO DE ESTATÍSTICAS**")
+                .setDescription("*Dados científicos e rankings do laboratório*")
+                .setColor(0x4ECDC4)
+                .addFields(
+                  {
+                    name: "🏆 `/ranking`",
+                    value: "**Funcionalidade:** Mostra ranking de tempo em call\n**Recursos:** Navegação por páginas, filtro de bots\n**Dados:** Horas, minutos e segundos precisos",
+                    inline: false
+                  },
+                  {
+                    name: "🧠 `/lobotomia-stats [@usuário]`",
+                    value: "**Individual:** Estatísticas pessoais de lobotomias\n**Servidor:** Ranking geral de lobotomizados\n**Inclui:** Lobotomias recebidas/realizadas",
+                    inline: false
+                  },
+                  {
+                    name: "🔬 `/ciencia-stats [@usuário]`",
+                    value: "**Dados:** Diagnósticos e experimentos\n**Estatísticas:** Recebidos e realizados\n**Período:** Histórico completo",
+                    inline: false
+                  },
+                  {
+                    name: "🧪 `/status-mental [@usuário]`",
+                    value: "**Verifica:** Diagnósticos ativos\n**Mostra:** Experimentos em andamento\n**Tempo:** Restante para expiração",
+                    inline: false
+                  }
+                )
+                .setFooter({ text: "Use @ para ver stats de outros usuários" });
+              break;
+
+            case "help_fun":
+              categoryEmbed = new EmbedBuilder()
+                .setTitle("🎭 **CENTRO DE DIVERSÃO**")
+                .setDescription("*Entretenimento científico garantido!*")
+                .setColor(0xFFE66D)
+                .addFields(
+        
+                  {
+                    name: "👋 `/ola`",
+                    value: "**Saudação:** Cumprimento personalizado\n**Uso:** Interação amigável\n**Resposta:** Menciona seu nome",
+                    inline: false
+                  },
+                  {
+                    name: "🏓 `/ping`",
+                    value: "**Teste:** Verifica latência do bot\n**Resposta:** Simples 'Pong!'\n**Uso:** Diagnóstico de conexão",
+                    inline: false
+                  }
+                )
+                .addFields(
+                  {
+                    name: "🎉 **RECURSOS AUTOMÁTICOS**",
+                    value: "• **Reações:** Emojis automáticos em comandos\n• **Imagens:** Anexos temáticos\n• **Contadores:** Sistema de estatísticas",
+                    inline: false
+                  }
+                )
+                .setFooter({ text: "Diversão responsável e científica!" });
+              break;
+
+            case "help_admin":
+              categoryEmbed = new EmbedBuilder()
+                .setTitle("👨‍💼 **PAINEL ADMINISTRATIVO**")
+                .setDescription("*Ferramentas de gerenciamento do laboratório*")
+                .setColor(0x9B59B6)
+                .addFields(
+                  {
+                    name: "⚙️ `/configurar`",
+                    value: "**Permissão:** Apenas administradores\n**Opções:** Duração de experimentos/diagnósticos\n**Configurações:** Desativar funcionalidades",
+                    inline: false
+                  },
+                  {
+                    name: "🔄 `/refresh`",
+                    value: "**Função:** Atualiza comandos do bot\n**Uso:** Após atualizações do código\n**Efeito:** Re-registra comandos slash",
+                    inline: false
+                  },
+                  {
+                    name: "🧹 `/limpar-comandos`",
+                    value: "**Permissão:** Apenas administradores\n**Função:** Remove comandos duplicados\n**Uso:** Limpeza de sistema",
+                    inline: false
+                  }
+                )
+                .addFields(
+                  {
+                    name: "⚠️ **AVISOS IMPORTANTES**",
+                    value: "• Comandos admin requerem permissões especiais\n• Use `/refresh` apenas se necessário\n• `/limpar-comandos` pode causar downtime temporário",
+                    inline: false
+                  }
+                )
+                .setFooter({ text: "Use com responsabilidade - Poder científico!" });
+              break;
+          }
+
+          const backButton = [
+            {
+              type: 1,
+              components: [
+                {
+                  type: 2,
+                  style: 2,
+                  customId: "help_back",
+                  emoji: "◀️",
+                  label: "Voltar ao Menu"
+                }
+              ]
+            }
+          ];
+
+          await i.update({
+            embeds: [categoryEmbed],
+            components: backButton
+          });
+        });
+
+        // Handler para voltar ao menu principal
+        helpCollector.on('collect', async (i) => {
+          if (i.customId === "help_back") {
+            await i.update({
+              embeds: [helpEmbed],
+              components: helpButtons
+            });
+          }
+        });
+
+        // Quando o collector expirar
+        helpCollector.on('end', () => {
+          const disabledButtons = [
+            {
+              type: 1,
+              components: helpButtons[0].components.map(button => ({
+                ...button,
+                disabled: true
+              }))
+            }
+          ];
+
+          helpMessage.edit({ components: disabledButtons }).catch(() => {});
+        });
+
+        break;
         break;
       case "limpar-comandos":
         // Verificar permissões
